@@ -15,20 +15,36 @@ enum UserState {
 class AWSLogin {
   static const MethodChannel _channel = MethodChannel('awslogin');
 
+  //Amplify
+  static Future<bool> get initAmplify async =>
+      await _channel.invokeMethod('initAmplify');
+
+  static Future<bool> facebookAmplifySignIn() async =>
+      await _channel.invokeMethod('fbAmplify');
+
+  static Future<bool> googleAmplifySignIn() async =>
+      await _channel.invokeMethod('googleAmplify');
+
+  static Future<bool> signOutAmplify() async =>
+      await _channel.invokeMethod('signOutAmplify');
+
+  static Future<bool> getAmpifySession() async =>
+      await _channel.invokeMethod('getSessionAmplify');
+
+
+  //AWS Mobile Client
   Future<UserState> get initAWS async {
     final String state = await _channel.invokeMethod('initialize');
     return getState(state);
   }
 
   Future<UserState> get awsSignIn async {
-    final String state =
-    await _channel.invokeMethod('aws_sign_in');
+    final String state = await _channel.invokeMethod('aws_sign_in');
     return getState(state);
   }
 
   static Future<String> get getUserName async =>
       await _channel.invokeMethod('get_username');
-
 
   static Future<Map<String, String>> get getSessionTokens async =>
       await _channel.invokeMethod('get_session_tokens');
@@ -41,16 +57,15 @@ class AWSLogin {
 
   Future<UserState> facebookSignIn({@required String fbAuthToken}) async {
     final String state =
-    await _channel.invokeMethod('facebook_sign_in', fbAuthToken);
+        await _channel.invokeMethod('facebook_sign_in', fbAuthToken);
     return getState(state);
   }
 
   Future<UserState> googleSignIn({@required String googleAuthToken}) async {
     final String state =
-    await _channel.invokeMethod('google_sign_in', googleAuthToken);
+        await _channel.invokeMethod('google_sign_in', googleAuthToken);
     return getState(state);
   }
-
 
   UserState getState(String state) {
     switch (state) {
@@ -70,6 +85,7 @@ class AWSLogin {
         return UserState.SIGNED_OUT_USER_POOLS_TOKENS_INVALID;
         break;
       case 'UNKNOWN':
+      default:
         return UserState.UNKNOWN;
         break;
     }
